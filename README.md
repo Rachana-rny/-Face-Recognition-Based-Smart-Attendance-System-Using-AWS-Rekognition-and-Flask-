@@ -28,5 +28,7 @@ A web-based application that leverages **Amazon Rekognition**, **Amazon S3**, an
 
 ---
 
-## 🗂️ Project Structure
+##
+Flask-based smart attendance system that uses AWS Rekognition for face detection and recognition. It supports multi-face recognition from a single image and logs attendance to an AWS RDS MySQL database. Student images are stored in AWS S3 — be sure to update the bucket name, Rekognition collection ID, and RDS credentials with your own AWS service details before deployment.
+
 
