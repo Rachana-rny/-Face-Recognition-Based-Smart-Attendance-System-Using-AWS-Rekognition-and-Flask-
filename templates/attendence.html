@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Attendance History</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Attendance History</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Student ID</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student_id, date, status in records %}
+      <tr>
+        <td>{{ student_id }}</td>
+        <td>{{ date }}</td>
+        <td>{{ status }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3">No attendance records found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

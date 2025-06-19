@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Face Attendance & Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #34495e;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    video, img {
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📸 Face Attendance & Registration</h2>
+
+    <label for="student_id">Student ID (for registration):</label>
+    <input type="text" id="student_id" name="student_id" placeholder="Enter your Student ID" />
+
+    <video id="video" width="320" height="240" autoplay></video>
+    <br>
+    <button id="snap">📷 Take Photo</button>
+
+    <canvas id="canvas" width="320" height="240"></canvas>
+    <img id="photo" src="" alt="Captured Photo" />
+
+    <div style="margin-top: 15px;">
+      <button id="register">📝 Register Face</button>
+      <button id="upload">✅ Mark Attendance</button>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+    const studentIdInput = document.getElementById('student_id');
+
+    // Start webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => alert('Error accessing webcam: ' + err));
+
+    // Capture photo
+    document.getElementById('snap').addEventListener('click', () => {
+      canvas.getContext('2d').drawImage(video, 0, 0, 320, 240);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      photo.src = dataUrl;
+    });
+
+    // Register face
+    document.getElementById('register').addEventListener('click', () => {
+      const studentId = studentIdInput.value.trim();
+      if (!studentId) {
+        alert('Please enter Student ID to register');
+        return;
+      }
+      if (!photo.src) {
+        alert('Please take a photo first');
+        return;
+      }
+      fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: studentId, image: photo.src })
+      })
+        .then(res => res.json())
+        .then(data => alert(data.message))
+        .catch(err => {
+          console.error(err);
+          alert('Registration failed');
+        });
+    });
+
+    // Upload for attendance
+    document.getElementById('upload').addEventListener('click', () => {
+      if (!photo.src) {
+        alert('Please take a photo first');
+        return;
+      }
+      fetch('/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: photo.src })
+      })
+        .then(res => res.json())
+        .then(data => alert(data.message))
+        .catch(err => {
+          console.error(err);
+          alert('Attendance upload failed');
+        });
+    });
+  </script>
+</body>
+</html>
